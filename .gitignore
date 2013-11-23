@@ -1,1 +1,5 @@
 *~
+*.bak
+*.1
+*.2
+proglang/hw4/compiled/*
