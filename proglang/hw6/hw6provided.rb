@@ -10,7 +10,7 @@ class Piece
   # color, rotation, and starting position.
   def initialize (point_array, board)
     @all_rotations = point_array
-    @rotation_index = (0..(@all_rotations.size-1)).to_a.sample
+    @rotation_index = 0 # (0..(@all_rotations.size-1)).to_a.sample
     @color = All_Colors.sample
     @base_position = [5, 0] # [column, row]
     @board = board
@@ -184,11 +184,12 @@ class Board
     if @game.is_running?
       ran = @current_block.drop_by_one
       while ran
-        @current_pos.each{|block| block.remove}
+        # @current_pos.each{|block| block.remove}
+        draw
         @score += 1
         ran = @current_block.drop_by_one
       end
-      draw
+      # draw
       store_current
       if !game_over?
         next_piece
