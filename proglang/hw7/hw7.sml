@@ -19,7 +19,7 @@ datatype geom_exp =
 	 | Intersect of geom_exp * geom_exp (* intersection expression *)
 	 | Let of string * geom_exp * geom_exp (* let s = e1 in e2 *)
 	 | Var of string
-   | Shift of real * real * geom_exp
+	 | Shift of real * real * geom_exp
 
 exception BadProgram of string
 exception Impossible of string
@@ -195,17 +195,18 @@ fun eval_prog (e,env) =
 	   | SOME (_,v) => v)
       | Let(s,e1,e2) => eval_prog (e2, ((s, eval_prog(e1,env)) :: env))
       | Intersect(e1,e2) => intersect(eval_prog(e1,env), eval_prog(e2, env))
-      | Shift(dx, dy, e) => 
+      | Shift(dx, dy, exp) => 
           (let 
-            val = eval_prog(e, env)
+            val v = eval_prog(exp, env)
           in
-            case val of
-              NoPoints => val
+            case v of
+              NoPoints => v
             | Point(x, y) => Point(x + dx, y + dy)
             | Line(m, b) => Line(m, b + dy - m * dx)
-            | Vertical(x) => Vertical(x + dx)
+            | VerticalLine(x) => VerticalLine(x + dx)
             | LineSegment(x1, y1, x2, y2) => LineSegment(x1 + dx, y1 + dy, x2 + dx, y2 + dy)
-            | _ => raise BadProgram("Didn't evaluate properly"))
+            | _ => raise BadProgram("Didn't evaluate properly")
+		  end)
 
 fun preprocess_prog(e) =
   case e of 
@@ -218,15 +219,12 @@ fun preprocess_prog(e) =
     if real_close_point (x1,y1) (x2,y2)
     then Point(x1, y1)
     else 
-      if !real_close(x1, x2) andalso x1 < x2
+      if not(real_close(x1, x2)) andalso x1 < x2
       then LineSegment(x1, y1, x2, y2)
       else 
-        if real_close(x1, x2) andalso !real_close(y1, y2) andalso y1 < y2
+        if real_close(x1, x2) andalso not(real_close(y1, y2)) andalso y1 < y2
         then LineSegment(x1, y1, x2, y2)
         else LineSegment(x2, y2, x1, y1)
   | Let(s, e1, e2) => Let(s, preprocess_prog(e1), preprocess_prog(e2))
   | Shift(dx, dy, e) => Shift(dx, dy, preprocess_prog(e))
-  | Intersect(e1, e2) => Intersect(preprocess_prog(e1), proprocess_prog(e2))
-        
-
-
+  | Intersect(e1, e2) => Intersect(preprocess_prog(e1), preprocess_prog(e2))
