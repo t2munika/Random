@@ -106,18 +106,15 @@ if not ((d2.is_a? Point)and d2.x == ONE and d2.y == TWO)
 	puts "LineSegment preprocess_prog should convert to a Point"
 	puts "if ends of segment are real_close"
 end
-
 d = d.preprocess_prog
 if not (d.x1 == -THREE and d.y1 == -FOUR and d.x2 == ONE and d.y2 == TWO)
 	puts "LineSegment preprocess_prog should make x1 and y1"
 	puts "on the left of x2 and y2"
 end
-
 d3 = d.shift(THREE,FIVE)
 if not (d3.x1 == ZERO and d3.y1 == ONE and d3.x2 == FOUR and d3.y2 == SEVEN)
 	puts "LineSegment shift not working properly"
 end
-
 d4 = d.intersect(LineSegment.new(-THREE,-FOUR,ONE,TWO))
 if not (((d4.is_a? LineSegment)) and d4.x1 == -THREE and d4.y1 == -FOUR and d4.x2 == ONE and d4.y2 == TWO)	
 	puts "LineSegment intersect not working properly"
@@ -167,6 +164,3 @@ s1 = s.preprocess_prog.eval_prog([])
 if not (s1.x1 == TWO and s1.y1 == THREE and s1.x2 == SIX and s1.y2 == 9)
 	puts "Shift should shift e by dx and dy"
 end
-
-
-
